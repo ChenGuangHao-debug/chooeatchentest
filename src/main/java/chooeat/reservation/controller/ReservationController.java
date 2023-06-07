@@ -85,9 +85,11 @@ public class ReservationController {
 		synchronized (this) {
 			Result result = new Result();
 
-			// redis連線
+			// redis連線-接3號DB
 			Jedis jedis = new Jedis();
-			jedis.select(2);
+			jedis.select(3);
+			
+			//設判斷，判斷redis是否有指定的資料，如果沒有，就新增，如果有，就抓出來，如果小於等於0，就擋掉
 
 			// 接前端的參數
 			String dateTime = (String) map.get("date_time");
@@ -98,6 +100,12 @@ public class ReservationController {
 			System.out.println("acc_id + " + acc_id);
 			System.out.println("restaurantId + " + restaurantId);
 			System.out.println(dateTime);
+			
+			//查詢當天該時段的剩餘座位數 - 訂位人數 是否等於0
+			
+			
+			
+			
 
 			try {
 				// 以下存入redis
