@@ -86,121 +86,133 @@ public class ReservationController {
 	}
 
 	// 訂位輸入成功，傳入redis，進入結帳頁面
-	@PostMapping("/reservationRedis")
-	@Transactional
-	public Result reservationRedis(@RequestBody Map<String, Object> map) {
-		
-		//設定回傳物件
-	    Result result = new Result();
-	    //設定要放進redis的map
-	    HashMap<String, String> data = new HashMap<>();
-	    //接前端參數
-	    String dateTime = (String) map.get("date_time");
-	    Integer reservationNumber = Integer.valueOf((String) map.get("ppl"));
-	    String text = (String) map.get("text");
-	    Double acc_id = (Double) map.get("acc_id");
-	    Double restaurantId = (Double) map.get("restaurantId");
-	    System.out.println("acc_id + " + acc_id);
-	    System.out.println("restaurantId + " + restaurantId);
-	    System.out.println(dateTime);
-	    
-	    //條件判斷，不符合條件的return出去
-	    Jedis jedis2 = new Jedis();
-	    jedis2.select(3);
-	    boolean exists = jedis2.exists(index);
-	    if (exists) {
-        	int checkingPeople = Integer.valueOf(jedis2.get(index));
-            if (checkingPeople <= 0) {
-                result.setStatus("error");
-                return result;
-            }else {
-            	 int rms = Integer.valueOf(jedis2.get(index)) - reservationNumber;
-            	 if(rms < 0) {
-            		 result.setStatus("error");
-                     return result;
-            	 }
-            }
-	    } 
-	    jedis2.close();
-	    
-	    Jedis jedis = new Jedis();
-	    jedis.select(2);
-	    
-//	    jedis.del("reservationLock");
-	    try {
-	    	
-	    	//設定暫存的剩餘座位數變數，預設式餐廳的最大可預約數（已經存進資料庫的剩餘座位數 - 還沒結帳的預約人數）
-	    	 Integer remainSeat = restaurantRepository.findById(restaurantId.intValue()).get().getResMaxNum();
-	    	
-	    	//redis上鎖，拿到鎖才可以進入下面判斷
-	        String lockKey = "reservationLock";
-	        String lockValue = UUID.randomUUID().toString();
-	        String key = "checkout";
-	        boolean isLocked = jedis.setnx(lockKey, lockValue) == 1;
-	        if (!isLocked) {
-	            result.setStatus("error");
-	            System.out.println("這時間有人在結帳");
-	            return result;
-	        } else {
-	            try {
-	            	//先把前端傳進來的預約日期字串轉換日期時間格式
-	                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	                java.util.Date utildate = dateFormat.parse(dateTime);
-	                //抓出選擇的日期
-	                Date sqlDate = new Date(utildate.getTime());
-	                List<HourlySeat> list = reservationDao.selectall(new Integer(restaurantId.intValue()), sqlDate);
-	                //用前端資料抓出選擇的小時
-	                int hour = utildate.getHours();
-	                System.out.println("當前小時是" + hour);
+		@PostMapping("/reservationRedis")
+		@Transactional
+		public Result reservationRedis(@RequestBody Map<String, Object> map) {
+			//設定回傳物件
+		    Result result = new Result();
+		    //設定要放進redis的map
+		    HashMap<String, String> data = new HashMap<>();
+		    //接前端參數
+		    String dateTime = (String) map.get("date_time");
+		    Integer reservationNumber = Integer.valueOf((String) map.get("ppl"));
+		    String text = (String) map.get("text");
+		    Double acc_id = (Double) map.get("acc_id");
+		    Double restaurantId = (Double) map.get("restaurantId");
+		    System.out.println("acc_id + " + acc_id);
+		    System.out.println("restaurantId + " + restaurantId);
+		    System.out.println(dateTime);
+		    //建立jedis連線
+		    Jedis jedis = new Jedis();
+ //		    jedis.del("reservationLock");
+		    String lockKey = "", lockValue = "";
+		    
+		    try {
+		    	//設定暫存的剩餘座位數變數（已經存進資料庫的剩餘座位數 - 還沒結帳的預約人數）
+		    	Integer remainSeat = restaurantRepository.findById(new Integer(restaurantId.intValue())).get().getResMaxNum();
+		    	
+		    	//redis上鎖，拿到鎖才可以進入下面判斷
+		    	
+		        lockKey = "reservationLock";
+		        lockValue = UUID.randomUUID().toString();
+		        String key = "checkout";
+		        boolean isLocked = jedis.setnx(lockKey, lockValue) == 1;
+		        if (!isLocked) {
+		            result.setStatus("error");
+		            System.out.println("這時間有人在結帳");
+		            return result;
+		        }
+		        //選擇2號資料庫
+		        jedis.select(2);
+		        //if判斷這邊，好像可以不用~"~?
+		        //因為redis結帳完就砍了，鎖定別人也進不來，但沒關係先留著
+		        boolean exists = jedis.exists(index);
+		        if (exists) {
+//		        	int checkingPeople = Integer.valueOf(jedis.get(key));
+//		            if (checkingPeople <= 0) {
+//		                result.setStatus("error");
+//		                return result;
+//		            } else {
+//		                int rms = Integer.valueOf(jedis.get(key)) - reservationNumber;
+//		                if (rms >= 0) {
+//		                    data.put(key, remainSeat.toString());
+//		                    data.put("accId", new Integer(acc_id.intValue()).toString());
+//		                    data.put("restaurantId", new Integer(restaurantId.intValue()).toString());
+//		                    data.put("reservationNumber", (String) map.get("ppl"));
+//		                    data.put("reservationDateStartTime", (String) map.get("date_time"));
+//		                    if (!text.isEmpty()) {
+//		                        data.put("reservationNote", text);
+//		                    } else {
+//		                        data.put("reservationNote", "");
+//		                    }
+//
+//		                    jedis.hmset(index, data);
+//
+//		                    result.setStatus("success");
+//		                }
+//		            }
+		        } else {
+		            try {
+		            	//先把前端傳進來的預約日期字串轉換日期時間格式
+		                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		                java.util.Date utildate = dateFormat.parse(dateTime);
+		                //抓出選擇的日期
+		                Date sqlDate = new Date(utildate.getTime());
+		                List<HourlySeat> list = reservationDao.selectall(new Integer(restaurantId.intValue()), sqlDate);
+		                //用前端資料抓出選擇的小時
+		                int hour = utildate.getHours();
+		                System.out.println("當前小時是" + hour);
 
+		            
 
-	                if (list.size() == 0) {
-	                	//用餐廳id去抓座位數量，去扣預約人數，剩下的存進redis
-	                    remainSeat = restaurantRepository.findById(new Integer(restaurantId.intValue())).get().getResMaxNum() - reservationNumber;
-	                    data.put(key, remainSeat.toString());
-	                } else {
-	                    for (HourlySeat hourlySeat : list) {
-	                        if (hourlySeat.getHour() == hour) {
-	                            remainSeat = hourlySeat.getRemainSeat();
-	                            System.out.println("當前時段有" + hourlySeat.getRemainSeat() + "個座位");
-	                            break;
-	                        }
-	                    }
-	                    System.out.println("剩餘座位111" + remainSeat);
-	                    System.out.println("預約數量111" + reservationNumber);
-	                    
-	                    remainSeat = remainSeat - reservationNumber;
-	                    System.out.println("更新後的數量是" + remainSeat);
-	                    data.put(key, remainSeat.toString());
-	                }
+		                if (list.size() == 0) {
+		                	//用餐廳id去抓座位數量，去扣預約人數，剩下的存進redis
+		                    remainSeat = restaurantRepository.findById(new Integer(restaurantId.intValue())).get().getResMaxNum() - reservationNumber;
+		                    data.put(key, remainSeat.toString());
+		                } else {
+		                    for (HourlySeat hourlySeat : list) {
+		                        if (hourlySeat.getHour() == hour) {
+		                            remainSeat = hourlySeat.getRemainSeat();
+		                            System.out.println("當前時段有" + hourlySeat.getRemainSeat() + "個座位");
+		                            break;
+		                        }
+		                    }
+		                    System.out.println("剩餘座位111" + remainSeat);
+		                    System.out.println("預約數量111" + reservationNumber);
+		                    
+		                    remainSeat = remainSeat - reservationNumber;
+		                    System.out.println("更新後的數量是" + remainSeat);
+		                    data.put(key, remainSeat.toString());
+		                }
 
-	                data.put("accId", new Integer(acc_id.intValue()).toString());
-	                data.put("restaurantId", new Integer(restaurantId.intValue()).toString());
-	                data.put("reservationNumber", (String) map.get("ppl"));
-	                data.put("reservationDateStartTime", (String) map.get("date_time"));
-	                if (!text.isEmpty()) {
-	                    data.put("reservationNote", text);
-	                } else {
-	                    data.put("reservationNote", "");
-	                }
+		                data.put("accId", new Integer(acc_id.intValue()).toString());
+		                data.put("restaurantId", new Integer(restaurantId.intValue()).toString());
+		                data.put("reservationNumber", (String) map.get("ppl"));
+		                data.put("reservationDateStartTime", (String) map.get("date_time"));
+		                if (!text.isEmpty()) {
+		                    data.put("reservationNote", text);
+		                } else {
+		                    data.put("reservationNote", "");
+		                }
 
-	                jedis.hmset(index, data);
-	                count++;
+		                jedis.hmset(index, data);
 
-	                result.setStatus("success");
-	                System.out.println("存儲至 Redis 中的 key: " + index);
-	            } catch (Exception e) {
-	                System.out.println("error: " + e.getMessage());
-	                result.setStatus("error");
-	            }
-	        }
-	    } finally {
-	        jedis.del("reservationLock");
-	        jedis.close();
-	    }
+		                result.setStatus("success");
+		                System.out.println("存儲至 Redis 中的 key: " + index);
+		            } catch (Exception e) {
+		                System.out.println("error: " + e.getMessage());
+		                result.setStatus("error");
+		            }
+		        }
+		    } finally {
+		    	jedis.setnx(lockKey, lockValue);
+		        jedis.del("reservationLock");
+		        System.out.println("解鎖啦");
+		        jedis.close();
+		    }
 
-	    return result;
-	}
+		    return result;
+		}
 
 
 

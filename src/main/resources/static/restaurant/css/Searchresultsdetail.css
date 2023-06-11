@@ -10,6 +10,55 @@ div>a {
   h1{
   font-size: 36px;
   }
+  .far.fa-bookmark {
+    cursor: pointer;
+ }
+
+
+ 
+#ddd{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 0.5rem; /* 設定內邊距，使文字與邊框有一點距離 */
+}
+
+#kkk {
+  border: 0px;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 15px rgba(81, 81, 81, 0.2);
+  padding: 0.5rem; /* 設定內邊距，使文字與邊框有一點距離 */
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+img {         
+  border-radius: 10px;
+}
+
+
+#iii {
+  border: 0px;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 15px rgba(81, 81, 81, 0.2);
+  padding: 0.5rem; /* 設定內邊距，使文字與邊框有一點距離 */
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+  #parentElement {         
+    border: 0px;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
+    box-shadow: 0 0 15px rgba(81, 81, 81, 0.2);
+    padding: 0.5rem; /* 設定內邊距，使文字與邊框有一點距離 */
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
   /*SLIDER 相關*/
 .carousel-indicators {
   margin: auto;

@@ -59,11 +59,6 @@ public class ResTypeDAOImpl implements ResTypeDAO  {
 				restaurant.setResTotalNumber(rs.getInt("res_total_number"));
 				restaurant.setResMaxNum(rs.getInt("res_max_num"));
 				byte[] photoBytes = rs.getBytes("res_photo");
-//				Byte[] photoWrapper = new Byte[photoBytes.length];
-//				for (int i = 0; i < photoBytes.length; i++) {
-//				    photoWrapper[i] = photoBytes[i];
-//				}
-//					restaurant.setResPhoto(photoWrapper);
 				  if (photoBytes != null && photoBytes.length > 0) {
 		                Byte[] photoWrapper = new Byte[photoBytes.length];
 		                for (int i = 0; i < photoBytes.length; i++) {

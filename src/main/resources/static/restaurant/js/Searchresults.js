@@ -5,6 +5,7 @@
 
  for (let i = 0; i < resultObj.length; i++) {
    const obj = resultObj[i];
+   const restaurantId=obj.restaurantId;
    const resName = obj.resName;
    const resAdd = obj.resAdd;
    const resAcc = obj.resAcc;
@@ -14,22 +15,22 @@
    const resTotalScore = obj.resTotalScore;
    const resTel = obj.resTel;
    const resPhoto=obj.resPhoto;
-    // 将 resPhoto 转换为 Base64 编码的字符串
+
+   // 圖片轉B64編碼字串
    const photoBase64 = arrayBufferToBase64(resPhoto);
    const imageSrc = `data:image/jpeg;base64,${photoBase64}`;
-
    var newDiv = document.createElement("div");
    newDiv.classList.add("card-body");
    newDiv.id = "aaa";
    newDiv.innerHTML = ` 
-   <div>
+   <div id="fff">
    <img src="${imageSrc}" alt="我是餐廳圖片" />
    </div>
    <div class="card-p">
-	 <p class="card-a">${resAdd}<span style="float: right"
-		   ><i class="far fa-bookmark" style="margin-right: 10px;"></i></span></p>
+ 	 <p class="card-c">${resName}<span style="float: right"
+		   ><i value="${restaurantId}" class="far fa-bookmark" style="margin-right: 10px;"></i></span></p>
+	 <p class="card-a">${resAdd}</p>
 	 <p class="card-b">今日營業時間 : ${resStartTime}-${resEndTime}</p>
-	 <p class="card-c">${resName}</p>
 	 <p class="card-d">連絡電話 : ${resTel}</p>
 	 <div class="ellipse" >
 	 ${resTotalScore}
@@ -169,3 +170,39 @@ function arrayBufferToBase64(buffer) {
 	 },
    });
  });
+
+ //添加到我的最愛功能	
+$(document).ready(function() {  
+	$(document).on('click', '.card-c i.far.fa-bookmark', function() {
+			var loginReq = sessionStorage.getItem("loginReq");	
+		if (loginReq) {			
+			var restaurantId = $(this).attr('value');			
+			var accobj = JSON.parse(loginReq);
+			var acc_id=accobj.acc_id	
+			var clickedIcon = $(this); // 被點擊的<i>標籤  
+			$.ajax({
+			   url: "restaurantaddmylove",
+			   method: "post",
+			   data: {
+				restaurantId: restaurantId,
+				  accId: acc_id,
+			   },
+			   dataType: "json",
+			   success: function(response) {
+				clickedIcon.css("background-color", "#FFDEB9");
+				
+			   },
+			   error: function(error) {
+				  console.log(error);
+			   },
+			});
+		 } 
+		else {
+		alert("無法添加到我的最愛,請登入會員")
+		window.location.href = "../account/login.html";
+		}
+	});
+});
+  
+ 
+  

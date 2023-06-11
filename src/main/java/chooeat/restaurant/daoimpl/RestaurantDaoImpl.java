@@ -32,8 +32,7 @@ public class RestaurantDaoImpl implements RestaurantDAO {
 	@Autowired
 	private DataSource dataSource;
 	@Override
-	public int restaurantregister(List<String> values) {
-		System.out.println("dadsa");
+	public int restaurantregister(List<String> values) {		
 
 		String sql = "INSERT INTO restaurant (res_acc, res_pass, res_state, res_name, res_add, res_tel, res_email, res_start_time, res_end_time, res_seat_number, single_meal, res_max_num) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -88,11 +87,6 @@ public class RestaurantDaoImpl implements RestaurantDAO {
 				restaurant.setResTotalNumber(rs.getInt("res_total_number"));
 				restaurant.setResMaxNum(rs.getInt("res_max_num"));
 				byte[] photoBytes = rs.getBytes("res_photo");
-//				Byte[] photoWrapper = new Byte[photoBytes.length];
-//				for (int i = 0; i < photoBytes.length; i++) {
-//				    photoWrapper[i] = photoBytes[i];
-//				}
-//				restaurant.setResPhoto(photoWrapper);
 				  if (photoBytes != null && photoBytes.length > 0) {
 		                Byte[] photoWrapper = new Byte[photoBytes.length];
 		                for (int i = 0; i < photoBytes.length; i++) {
@@ -170,7 +164,7 @@ public class RestaurantDaoImpl implements RestaurantDAO {
 
 	@Override
 	public List<Object> findfollow(String resAcc) {
-		String sql = "select account.acc_id,acc_name from restaurant join \r\n" + "saved_res on \r\n"
+		String sql = "select DISTINCT account.acc_id,acc_name from restaurant join \r\n" + "saved_res on \r\n"
 				+ "restaurant.restaurant_id=saved_res.restaurant_id join account on\r\n"
 				+ "saved_res.acc_id=account.acc_id where res_acc=?";
 		List<Object> resultList = new ArrayList<>();
@@ -281,7 +275,7 @@ public class RestaurantDaoImpl implements RestaurantDAO {
 	public List<Object> findcomment(String resAcc) {
 		String sql = "SELECT DISTINCT restaurant_comment_score,restaurant_comment_text,COALESCE(restaurant_comment_reply_text, '') AS restaurant_comment_reply_text, restaurant_comment_datetime, restaurant_comment_reply_datetime, acc_name FROM restaurant \r\n"
 				+ "JOIN reservation ON restaurant.restaurant_id = reservation.restaurant_id \r\n"
-				+ "JOIN account ON reservation.acc_id = account.acc_id WHERE res_acc = ?";
+				+ "JOIN account ON reservation.acc_id = account.acc_id WHERE res_acc = ? and restaurant_comment_text IS NOT NULL";
 		List<Object> commentList = new ArrayList<>();
 		try {
 			Connection conn = dataSource.getConnection();
@@ -296,7 +290,6 @@ public class RestaurantDaoImpl implements RestaurantDAO {
 				reservationVO.setRestaurantCommentDatetime(rs.getTimestamp("restaurant_comment_datetime"));
 				Timestamp replyDatetime = rs.getTimestamp("restaurant_comment_reply_datetime");
 		        reservationVO.setRestaurantCommentReplyDatetime(replyDatetime != null ? replyDatetime : Timestamp.valueOf(LocalDateTime.now()));
-//				reservationVO.setRestaurantCommentReplyDatetime(rs.getTimestamp("restaurant_comment_reply_datetime"));
 				commentList.add(reservationVO);
 			}
 			rs.close();
@@ -323,16 +316,12 @@ public class RestaurantDaoImpl implements RestaurantDAO {
 				restaurantVO.setRestaurantId(rs.getInt("restaurant_id"));
 				restaurantVO.setResAcc(rs.getString("res_acc"));
 				restaurantVO.setResName(rs.getString("res_name"));
-				restaurantVO.setResAdd(rs.getString("res_add"));
+				restaurantVO.setResAdd(rs.getString("res_add"));				
 				restaurantVO.setResStartTime(rs.getTime("res_start_time"));
 				restaurantVO.setResEndTime(rs.getTime("res_end_time"));
 				restaurantVO.setResTotalScore(rs.getInt("res_total_score"));
+				restaurantVO.setResIntro(rs.getString("res_intro"));
 				byte[] photoBytes = rs.getBytes("res_photo");
-//				Byte[] photoWrapper = new Byte[photoBytes.length];
-//				for (int i = 0; i < photoBytes.length; i++) {
-//				    photoWrapper[i] = photoBytes[i];
-//				}
-//				restaurant.setResPhoto(photoWrapper);
 				  if (photoBytes != null && photoBytes.length > 0) {
 		                Byte[] photoWrapper = new Byte[photoBytes.length];
 		                for (int i = 0; i < photoBytes.length; i++) {
@@ -943,5 +932,31 @@ public class RestaurantDaoImpl implements RestaurantDAO {
 			e.printStackTrace();
 		}
 		return restaurantlList;
+	}
+
+	@Override
+	public int restaurantaddmylove(String restaurantId, String accId) {
+		
+		String sql = "INSERT INTO saved_res (restaurant_id, acc_id)\r\n"
+				+ "VALUES (?, ?);";
+		int result = 0;
+		try {
+			Connection conn = dataSource.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1,restaurantId);
+			pstmt.setString(2,accId);				
+			int rowsAffected = pstmt.executeUpdate();
+
+			if (rowsAffected > 0) {
+				result = 1;
+			}			
+			pstmt.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 2;
+		}
+		return 1;
 	}
 }

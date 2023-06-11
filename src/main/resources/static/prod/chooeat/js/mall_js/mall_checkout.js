@@ -107,7 +107,7 @@ function sendCartDataToBackend() {
 
 	var requestData = {
 		cartData: cartData,
-		memberId: 10,
+		memberId: accId,
 		originalAmount: originalAmount,
 		checkoutAmount: checkoutAmount
 	};

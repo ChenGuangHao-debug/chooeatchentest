@@ -9,6 +9,20 @@ div.main_content{
 }
 
 /*版面配置*/
+#resdatail {
+  cursor: pointer;
+}
+.far.fa-bookmark {
+  cursor: pointer;
+}
+#fff {         
+  padding: 0.5rem; /* 設定內邊距，使文字與邊框有一點距離 */  
+}
+
+img {         
+  border-radius: 10px;
+}
+
 a{
   text-decoration:none;
   color: black;
@@ -111,8 +125,11 @@ margin-left:10px;
   height: 100%; 
   margin-right: 5px;
 }
-.card-a{
+.card-c{
   font-size: 24px;
+}
+.card-a{
+  cursor: pointer;
 }
 .card-p p{
   margin-top: 5px;

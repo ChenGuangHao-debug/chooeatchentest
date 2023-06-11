@@ -38,4 +38,5 @@ public interface RestaurantService {
 	int restaurantupdatecomment(String accName, String restaurantId, String commentInput);
 	int restaurantupdateprod(String restaurantId, String prodName, String prodPrice, String prodQty, String prodUserGuide, String prodText, String prodState, String prodId);
 	List<RestaurantVO> getcarousel(Set<Integer> randomNumbers);
+	int restaurantaddmylove(String resAcc, String accId);
 }

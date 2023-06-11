@@ -7,6 +7,9 @@ div.main_content{
 .list-group button {
   margin-bottom: 30px;
 }
+img {         
+  border-radius: 10px;
+}
 
 /*版面配置*/
 a{
@@ -56,7 +59,8 @@ div>a {
   width: 800PX;
   height: 300px;  
   padding-bottom: 30px;  
-  padding-top: 30px;     
+  padding-top: 30px;
+  border-radius: 50px;    
   }
 .d-inline-block {
   transform: translateX(20%);

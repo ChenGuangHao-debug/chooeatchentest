@@ -69,7 +69,7 @@ public class OrderDetailController extends HttpServlet {
 
 		// 取值
 		JsonObject jsonData = jsonObject.getAsJsonObject("cartData");
-		int memberId = jsonObject.get("memberId").getAsInt();
+		int accId = jsonObject.get("memberId").getAsInt();
 		String originalAmountStr = jsonObject.get("originalAmount").getAsString().replaceAll("[^0-9]", "");
 		String checkoutAmountStr = jsonObject.get("checkoutAmount").getAsString().replaceAll("[^0-9]", "");
 		int originalAmount = Integer.parseInt(originalAmountStr);
@@ -77,7 +77,7 @@ public class OrderDetailController extends HttpServlet {
 
 		// 訂單物件
 		Order order = new Order();
-		order.setAccId(memberId);
+		order.setAccId(accId);
 		order.setOrderState(0);
 		order.setAmountBeforeCoupon(originalAmount);
 		order.setFinalAmount(checkoutAmount);
@@ -129,7 +129,7 @@ public class OrderDetailController extends HttpServlet {
 		Jedis jedis = null;
 		try {
 			jedis = new Jedis("localhost", 6379);
-			String cartKey = "cart:user1"; // 實際情況+ memberId
+			String cartKey = "cart:user"+accId; // 實際情況+ memberId
 			jedis.select(1);
 
 			JsonParser parser = new JsonParser();

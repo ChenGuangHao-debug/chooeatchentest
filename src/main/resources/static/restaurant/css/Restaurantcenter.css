@@ -10,21 +10,31 @@
         border-radius: 0.5rem;
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         border-radius: 0.5rem;
-        box-shadow: 0 0 15px rgba(81, 81, 81, 0.2);}
+        box-shadow: 0 0 15px rgba(81, 81, 81, 0.2);
+        padding: 5px;
+    }
 
     #collapseTwo{     
         border: 0;
         border-radius: 0.5rem;
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         border-radius: 0.5rem;
-        box-shadow: 0 0 15px rgba(81, 81, 81, 0.2);}
+        box-shadow: 0 0 15px rgba(81, 81, 81, 0.2);
+        padding: 5px;
+    }
      #collapseThree{     
         border: 0;
         border-radius: 0.5rem;
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         border-radius: 0.5rem;
-        box-shadow: 0 0 15px rgba(81, 81, 81, 0.2);}
-
+        box-shadow: 0 0 15px rgba(81, 81, 81, 0.2);
+        padding: 5px;
+    }
+ 
+    img {         
+       border-radius: 20px;
+    }
+          
 
     /*版面相關*/
     .nav-pills .nav-link {
@@ -81,3 +91,4 @@
       box-shadow: 3px 3px 0px transparent;
       transition: 0.5s;
       }
+

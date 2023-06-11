@@ -69,7 +69,6 @@ public class RestaurantLogin extends HttpServlet {
         
     	Gson gson = new GsonBuilder().registerTypeAdapter(Time.class, new CustomTimeSerializer()).create();
 		String jsonStr = gson.toJson(restaurantList);		
-		System.out.println(jsonStr);
 		response.getWriter().write(jsonStr);
    }
 }

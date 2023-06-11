@@ -119,31 +119,17 @@ public class RestaurantServiceImpl<K> implements RestaurantService {
 
 	@Override
 	public Map<String, Object> forwardresdetail(String resAcc) {
-		Map<String, Object> resultMap = new HashMap<>();
-//Gson gson = new GsonBuilder().registerTypeAdapter(Time.class, new CustomTimeSerializer()).create();
-	
+		Map<String, Object> resultMap = new HashMap<>();	
 		List<Object> restypeList = dao.findrestype(resAcc);
-//		String a = gson.toJson(restypeList);
-//		System.out.println(a);
 		List<Object> prodList = dao.findprod(resAcc);
-//		String b = gson.toJson(prodList);
-//		System.out.println(b);
 		List<Object> commentList = dao.findcomment(resAcc);
-//	String c = gson.toJson(commentList);
-//	System.out.println(c);
 		List<Object> myselfList = dao.findmyself(resAcc);
-//		String d = gson.toJson(myselfList);
-//		System.out.println(d);
 		List<Object> accountList = dao.findaccount(resAcc);
-//		String e = gson.toJson(accountList);
-//		System.out.println(e);
 		addToResultMap(resultMap, "restype", restypeList);
 		addToResultMap(resultMap, "prod", prodList);
 		addToResultMap(resultMap, "comment", commentList);
 		addToResultMap(resultMap, "myself", myselfList);
 		addToResultMap(resultMap, "account", accountList);
-//		String f = gson.toJson(resultMap);
-//		System.out.println(f);
 		return resultMap;
 	}
 
@@ -335,6 +321,12 @@ public class RestaurantServiceImpl<K> implements RestaurantService {
    	
 
 		return dao.getcarousel(var1,var2,var3,var4,var5);
+	}
+
+	@Override
+	public int restaurantaddmylove(String restaurantId, String accId) {
+		
+		return dao.restaurantaddmylove(restaurantId,accId);
 	}
 
 	

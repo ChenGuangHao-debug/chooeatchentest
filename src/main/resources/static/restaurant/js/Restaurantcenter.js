@@ -41,20 +41,19 @@ function arrayBufferToBase64(buffer) {
         rrr.innerHTML = `
           <img
             src="${imageSrcm}"          
-            style="width: 100%; height: 200px"
+            style="width: 100%; height: 200px ; margin-bottom: 10px;"
           />
         `;
       } else {
         rrr.innerHTML = `
-          <span>這裡是圖片顯示頁面喔!!目前沒圖片喔!!</span>
+          <div style="text-align: center">這裡是圖片顯示頁面喔!!目前沒圖片喔!!</div>
         `;
       }
       ddd.appendChild(rrr);
 
 
       
-      var resAcc =response.restauranthomepagemyselfList[0]["resAcc"]    
-         
+      var resAcc =response.restauranthomepagemyselfList[0]["resAcc"]             
       var ccccc = document.createElement("div");   
    ccccc.innerHTML = ` 
    <div>
@@ -297,6 +296,17 @@ $(document).ready(function() {
   });
 });
 
+
+ //上傳時預覽餐卷圖片
+ function previewImagemyself(event) {
+  var reader = new FileReader();
+  reader.onload = function () {
+    var imagePreview = document.getElementById("image-preview");
+    imagePreview.src = reader.result;
+    imagePreview.style.display = "block";
+  };
+  reader.readAsDataURL(event.target.files[0]);
+}
 
 
 
@@ -649,12 +659,32 @@ $(document).ready(function () {
       { data: "restaurantCommentDatetime", title: "留言日期" },
       { data: "restaurantCommentText", title: "留言評論" },
       { data: "restaurantCommentScore", title: "星數評價" },
-      { data: "restaurantCommentReplyDatetime", title: "餐廳回復日期" },
-      { data: "restaurantCommentReplyText", title: "餐廳回復評論" },
+      { 
+        data: null,
+        title: "餐廳回復日期",
+        render: function(data, type, row) {
+          if (row.restaurantCommentReplyText) {
+            return row.restaurantCommentReplyDatetime;
+          } else {
+            return '';
+          }
+        }
+      },
+      { 
+        data: null,
+        title: "餐廳回復評論",
+        render: function(data, type, row) {
+          if (row.restaurantCommentReplyText) {
+            return row.restaurantCommentReplyText;
+          } else {
+            return '';
+          }
+        }
+      },
       {
         data: null,
-       title: "操作功能", 
-        render: function (data, type,row) {
+        title: "操作功能",
+        render: function (data, type, row) {
           if (row.restaurantCommentReplyText) {
             return '';
           } else {
@@ -663,6 +693,7 @@ $(document).ready(function () {
         },
       },
     ],
+    
     
   });
 
@@ -699,13 +730,14 @@ $(document).ready(function () {
  function previewImage(event) {
    var reader = new FileReader();
    reader.onload = function () {
-     var imagePreview = document.getElementById("image-preview");
+     var imagePreview = document.getElementById("image-previewprod");
      imagePreview.src = reader.result;
      imagePreview.style.display = "block";
    };
    reader.readAsDataURL(event.target.files[0]);
  }
 
+ 
  
  
 //上傳餐卷功能 

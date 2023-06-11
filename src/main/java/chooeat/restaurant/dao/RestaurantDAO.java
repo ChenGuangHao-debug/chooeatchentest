@@ -45,6 +45,7 @@ public interface RestaurantDAO {
 	int restaurantupdateprod(String restaurantId, String prodName, String prodPrice, String prodQty,
 			String prodUserGuide, String prodText, String prodState, String prodId);
 	List<RestaurantVO> getcarousel(int var1, int var2, int var3, int var4, int var5);
+	int restaurantaddmylove(String resAcc, String accId);
 	
 	
 }
